@@ -2,13 +2,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 class Instrument():
-    def __init__(self):
+    def __init__(self, vf):
         self.x = []
         self.y1 = []
         self.y2 = []
         self.y3 = []
         self.y4 = []
         self.y5 = []
+        self.vf = vf
         
         self.pl = 0.
         
@@ -38,9 +39,10 @@ class Instrument():
         top = s * (2 * ON + s) 
         bottom = 2 * N
         f = top / bottom
-        vf = 0.01 * np.abs(f)
+        vf = self.vf * np.abs(f)
         self.totvf += vf
-        return f + vf
+        return 0.
+        #return f + vf
     
     def update_price(self, price):
         self.price = price
