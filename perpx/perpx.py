@@ -1,8 +1,15 @@
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.dates as md
+
+def norm(y):
+    r = y - np.min(y)
+    r = r / np.max(r)
+    return r
 
 class Instrument():
-    def __init__(self, vf):
+    def __init__(self, vf, neutral=False):
+        self.neutral = neutral
         self.x = []
         self.y1 = []
         self.y2 = []
@@ -33,6 +40,8 @@ class Instrument():
         return (self.oi * self.price) / self.pool()
     
     def fees(self, sz):
+        if self.neutral:
+            return 0.
         s = sz * self.price
         ON = self.oi * self.price
         N = self.pool()
@@ -41,8 +50,7 @@ class Instrument():
         f = top / bottom
         vf = self.vf * np.abs(f)
         self.totvf += vf
-        return 0.
-        #return f + vf
+        return f + vf
     
     def update_price(self, price):
         self.price = price
@@ -79,7 +87,9 @@ class Instrument():
         self.y5.append(self.price)
         
     def plot(self):
-        plt.plot(self.x, self.y1, label="Liquidity pool")
+        plt.ylabel("$")
+        plt.xlabel("Block")
+        plt.plot(self.x, self.y1 , label="Liquidity pool")
         plt.legend()
         plt.show()
         plt.plot(self.x, self.y2, label="Traders' pnl")
@@ -88,9 +98,11 @@ class Instrument():
         plt.plot(self.x, self.y3, label="Traders' net positions")
         plt.legend()
         plt.show()
-        plt.plot(self.x, self.y4, label="Imbalance")
-        plt.legend()
-        plt.show()
+        #plt.plot(self.x, norm(self.y4), label="Imbalance")
+        plt.xticks(rotation=25)
+        #xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+        #ax=plt.gca()
+        #ax.xaxis.set_major_formatter(xfmt)
         plt.plot(self.x, self.y5, label="Price")
         plt.legend()
         plt.show()
